@@ -1,97 +1,137 @@
 SoftButton Library for Adafruit 2.8" TFT LCD Touchscreen
 
-This library attempts to merge the push-button library functionality created by Franky (29/01/09)
-which provides a variety of push-button behaviors for dealing with hardware momentary switches
-with the TFTLCD and TS libraries provided by Adafruit for driving their 2.8" TFTLCD Touchscreen
-product.
+This library attempts to merge the push-button library functionality
+created by Franky (29/01/09) which provides a variety of push-button
+behaviors for dealing with hardware momentary switches with the TFTLCD
+and TS libraries provided by Adafruit for driving their 2.8" TFTLCD
+Touchscreen product.
 
 You have to draw your own buttons.
 
 Leave a 3 pixel margin around the edge of each button.
 
-The 3 pixel margin is used for beveling the button to create the effect of whether the button
-is pressed or not.
+The 3 pixel margin is used for beveling the button to create the
+effect of whether the button is pressed or not.
 
-Note, I'm not a math major and I wanted to code to run relatively fast, so, the beveling
-algorithm is pretty cheap and dirty and doesn't do any real 3D calculations or projections.
+Note, I'm not a math major and I wanted to code to run relatively
+fast, so, the beveling algorithm is pretty cheap and dirty and
+doesn't do any real 3D calculations or projections.
 
 However, the library will (assuming you call check() often enough):
 
-	Bevel the button to reflect the current state (Pressed or not)
-	Return apprpriate return codes for Press, Release, On, Off, and/or Repeating on a timer.
+  Bevel the button to reflect the current state (Pressed or not)
+
+  Return apprpriate return codes for Press, Release, On, Off,
+  and/or Repeating on a timer.
 
 Button Modes:
-	OneShot			Returns only Pressed (first time check()ed after being pressed) or Off (any other time)
-	Memory			Returns Pressed (first time check()ed after being pressed), ON (still held down),
-				Released (first time check()ed after being released), or OFF (still not pressed).
-	Timer			Returns Pressed (first time check()ed after being pressed), ON (still down),
-				Hold (repeat timer expired and still held), Released (first time check()ed) after being released, or
-				OFF (still not pressed).
-	OneShotTimer		Like OneShot, but will return Hold if button still down and repeat timer expired.
-	MemoryTimer		Like Memory, but will return Hold if button still down and repeat timer expired.
+  OneShot	Returns only Pressed (first time check()ed after
+		being pressed) or Off (any other time)
+
+  Memory	Returns Pressed (first time check()ed after being
+		pressed), ON (still held down), Released (first
+		time check()ed after being released), or OFF (still
+		not pressed).
+
+  Timer		Returns Pressed (first time check()ed after being
+		pressed), ON (still down), Hold (repeat timer expired
+		and still held), Released (first time check()ed)
+		after being released, or OFF (still not pressed).
+
+  OneShotTimer	Like OneShot, but will return Hold if button still
+		down and repeat timer expired.
+
+  MemoryTimer	Like Memory, but will return Hold if button still
+		down and repeat timer expired.
 
 
 Calling sequence:
 
-	The instantiation of the button is rather complex. Sorry about that, but, I made it as
-	simple as I could and still get full functionality.
+  The instantiation of the button is rather complex. Sorry about
+  that, but, I made it as simple as I could and still get full
+  functionality.
 
-	softButton B_Name(&tft, &ts, XP, XM, YP, YM, X, Y, W, H, C[, M]);
+  softButton B_Name(&tft, &ts, XP, XM, YP, YM, X, Y, W, H, C[, M]);
 
-	&tft is a TFTLCD * pointer to your TFTLCD display.
-	&ts is a TouchScreen * pointer to your TouchScreen
-	XP, XM, YP, YM are the pins assigned for X+, X-, Y+, and Y-, respectively.
-	X,Y are the position of the upper left corner of the button (your image
-		should begin at X+3, Y+3)
-	W, H are the Width and Height of the button, respectively.
-	C is the Background Color of the button (a factor for the beveling algorithm)
-	M if specified will set the operational mode of the button.
-		If M is not specified, the mode will default to OneShot
+  &tft is a TFTLCD * pointer to your TFTLCD display.
+
+  &ts is a TouchScreen * pointer to your TouchScreen
+
+  XP, XM, YP, YM are the pins assigned for X+, X-, Y+, and Y-,
+	respectively.
+
+  X,Y are the position of the upper left corner of the button (your
+	image should begin at X+3, Y+3)
+
+  W, H are the Width and Height of the button, respectively.
+
+  C is the Background Color of the button (a factor for the beveling
+	algorithm)
+
+  M if specified will set the operational mode of the button.
+	Note: If M is not specified, the mode will default to OneShot
 
 
-	Beyond instantiation, the primary thing you will use will be check():
+  Beyond instantiation, the primary thing you will use will be check():
 
-	int state=B_Name.check();
+  int state=B_Name.check();
 
-	state can be compared to any of the button states:
-		On
-		Off
-		Pressed
-		Released
-		Hold
+  state can be compared to any of the button states:
+  	On
+  	Off
+  	Pressed
+  	Released
+  	Hold
 
-	When you first draw your button, it's a good idea to call B_Name.bevelButton(false);
+  When you first draw your button, it's important to call
+	B_Name.bevelButton(false);
 
-	The code is optimized to avoid unnecessary beveling calls, so your button might not
-	get beveled until it gets pressed if you don't call bevelButton() after drawing.
+  The code is optimized to avoid unnecessary beveling calls, so your
+  button might not get beveled until it gets pressed if you don't
+  call bevelButton() after drawing.
 
-	(If you call bevelButton(true), it will draw the button pressed).
+  (If you call bevelButton(true), it will draw the button pressed).
 
 
 Auxilialry functions:
 
-	Just like the hard Button library, you can change the behavior of your softButtons.
+  Just like the hard Button library, you can change the behavior
+  of your softButtons.
 
 	B_Name.setMode(byte mode);
 	B_Name.setTimer(unsigned int t);
 	B_Name.setRefresh(unsigned int r);
 
-	For convenience, your button drawing routine(s) can make use of the following
-	public variables:
+  For convenience, your button drawing routine(s) can make use of the
+  following public variables:
 
-	TFTLCD *B_Name.Display		The Display associated with the button
-	TouchScreen *B_Name.ts		The touchscreen associated with the button
-	unsigned int bgcolor		The background color of the button
-	unsigned int x1, y1		Upper left corner of button+bevel coordinates
-	unsigned int x2, y2		Lower right corner of button+bevel coordinates
-						Note: Button Image should be constrained to
-							(x1+3, y1+3) - (x2-3, y2-3)
-						Otherwise, your image will be partially
-						overwritten by beveling.
+	TFTLCD *B_Name.Display		The Display associated with
+					the button
+
+	TouchScreen *B_Name.ts		The touchscreen associated
+					with the button
+
+	unsigned int bgcolor		The background color of the
+					button
+
+	unsigned int x1, y1		Upper left corner of
+					button+bevel coordinates
+
+	unsigned int x2, y2		Lower right corner of
+					button+bevel coordinates
+					Note: Button Image should be
+					constrained to (x1+3, y1+3) -
+					(x2-3, y2-3) Otherwise, your
+					image will be partially
+					overwritten by beveling.
+
+
 
 An example button drawing function:
 
-void drawArrowButton(softButton *B, byte Direction, unsigned int fgcolor)
+
+void drawArrowButton(softButton *B, byte Direction,
+                     unsigned int fgcolor)
 {
   unsigned int x1, y1, width, height, bgcolor;
   x1=B->x1+3;
@@ -110,25 +150,37 @@ void drawArrowButton(softButton *B, byte Direction, unsigned int fgcolor)
   y1+=2;
   width-=2;
   height-=2;
-  if (Direction != constrain(Direction, 0, 3)) Serial.println("drawArrowButton: Invalid Direction");
+  if (Direction != constrain(Direction, 0, 3))
+    Serial.println("drawArrowButton: Invalid Direction");
   Direction %= 4;
-  // We use >>1 in the following statements as a really fast divide-by-2
-  if (Direction == 0) B->Display->fillTriangle(x1,y1+height, x1+(width>>1), y1, x1+width, y1+height, fgcolor);  // Uparrow
-  if (Direction == 1) B->Display->fillTriangle(x1, y1, x1, y1+height, x1+width, y1+(height>>1), fgcolor);       // Rightarrow
-  if (Direction == 2) B->Display->fillTriangle(x1,y1, x1+(width>>1), y1+height, x1+width, y1, fgcolor);         // Downarrow
-  if (Direction == 3) B->Display->fillTriangle(x1,y1+(height>>1), x1+width, y1, x1+width, y1+height, fgcolor);  // LeftArrow
+  // We use >>1 in the following statements as a fast divide-by-2
+  if (Direction == 0) B->Display->fillTriangle(
+    x1,y1+height, x1+(width>>1), y1,
+    x1+width, y1+height, fgcolor);  // Uparrow
+  if (Direction == 1) B->Display->fillTriangle(
+    x1, y1, x1, y1+height,
+    x1+width, y1+(height>>1), fgcolor);       // Rightarrow
+  if (Direction == 2) B->Display->fillTriangle(
+    x1,y1, x1+(width>>1), y1+height,
+    x1+width, y1, fgcolor);         // Downarrow
+  if (Direction == 3) B->Display->fillTriangle(
+    x1,y1+(height>>1), x1+width, y1,
+    x1+width, y1+height, fgcolor);  // LeftArrow
   B->bevelButton(false);
 }
 
-The above code isn't part of the library, but, you are welcome to use it with the library.
+The above code isn't part of the library, but, you are welcome
+to use it with the library.
 
-It draws an arrow button within the constraints described above taking as much data as it
-can from the Button object. Note that you only pass the drawing function 3 parameters:
+It draws an arrow button within the constraints described above
+taking as much data as it can from the Button object. Note that
+you only pass the drawing function 3 parameters:
 
 	The Button reference.
-	The direction the Arrow should point (0=up, 1=right, 2=down, 3=left)
+	The direction the Arrow should point
+		(0=up, 1=right, 2=down, 3=left)
 	The foreground color to draw the Arrow.
 
-The function will use the background color from the Button as well as the button's
-dimensional and positional data and Display reference.
+The function will use the background color from the Button as well
+as the button's dimensional and positional data and Display reference.
 

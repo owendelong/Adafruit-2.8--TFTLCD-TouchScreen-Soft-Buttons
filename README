@@ -1,10 +1,20 @@
 SoftButton Library for Adafruit 2.8" TFT LCD Touchscreen
 
+DISCLAIMER:
+This Library is NOT provided by AdaFruit and they have not
+endorsed it. The use of the Adafruit name is merely to provide
+a reference to which devices/libraries this library works with
+and depends on. It is in no way intended to convey any affiliation
+whatsoever with Adafruit or imply that Adafruit supports this
+library in any way.
+
+
+
 This library attempts to merge the push-button library functionality
-created by Franky (29/01/09) which provides a variety of push-button
-behaviors for dealing with hardware momentary switches with the TFTLCD
-and TS libraries provided by Adafruit for driving their 2.8" TFTLCD
-Touchscreen product.
+(Buttons created by Franky (29/01/09)) which provides a variety of
+push-button behaviors for dealing with hardware momentary switches
+with the TFTLCD and TS libraries provided by Adafruit for driving
+their 2.8" TFTLCD Touchscreen product.
 
 You have to draw your own buttons.
 
